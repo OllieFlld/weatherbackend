@@ -4,6 +4,8 @@
 
 #ifndef BACKEND_DATABASEMANAGER_H
 #define BACKEND_DATABASEMANAGER_H
+#include <list>
+
 #include "../entities/WeatherDataEntity.h"
 #include <sqlite3.h>
 
@@ -13,6 +15,8 @@ public:
     ~DatabaseManager();
 
     WeatherDataEntity getCurrentConditions();
+
+    std::list<WeatherDataEntity>  getRecentConditions(int count);
 private:
     sqlite3 *db;
 

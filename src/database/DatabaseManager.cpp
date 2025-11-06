@@ -4,6 +4,10 @@
 
 #include "DatabaseManager.h"
 
+#include <list>
+
+#include "DatabaseHelper.h"
+
 DatabaseManager::DatabaseManager(std::string dbPath) {
     sqlite3_open(dbPath.c_str(), &this->db);
     if (!tablesExist()) {
@@ -34,7 +38,6 @@ bool DatabaseManager::tablesExist() {
 
 void DatabaseManager::createWeatherTable() {
     const char *sql = "CREATE TABLE weather ("
-            "ID INT PRIMARY KEY NOT NULL,"
             "Timestamp INTEGER,"
             "ReportInterval TEXT,"
             "AirTemp TEXT,"
@@ -57,11 +60,10 @@ void DatabaseManager::createWeatherTable() {
     sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
 }
 
-WeatherDataEntity DatabaseManager::getCurrentConditions() {
-    WeatherDataEntity conditions;
 
-    const char *sql = "SELECT"
-            "Timestamp,"
+std::list<WeatherDataEntity> DatabaseManager::getRecentConditions(int count = 0) {
+    std::string sql = "SELECT"
+            " Timestamp,"
             "ReportInterval,"
             "AirTemp,"
             "WindLull,"
@@ -78,15 +80,31 @@ WeatherDataEntity DatabaseManager::getCurrentConditions() {
             "PrecipType,"
             "StrikeCount,"
             "StrikeDistance"
-            "FROM Weather"
-            "ORDER BY Timestamp DESC"
-            "LIMIT 1;";
-    sqlite3_exec(db, sql,
-        [](void *conditions, int count, char **data, char **columns) {
-            *reinterpret_cast<WeatherDataEntity *>(conditions) = WeatherDataEntity::fromDB(data, columns);
+            " FROM weather"
+            " ORDER BY Timestamp DESC";
 
-            return 1;
-    }, &conditions, nullptr);
+    if (count > 0) {
+        sql = sql + " LIMIT " + std::to_string(count);
+    }
+    sqlite3_stmt *stmt;
+
+    int prepared = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (prepared != SQLITE_OK) {
+        throw std::runtime_error(sqlite3_errmsg(db));
+    }
+
+    std::list<WeatherDataEntity> conditions;
+
+    int done;
+    while ((done = sqlite3_step(stmt) == SQLITE_ROW)) {
+        conditions.push_back(WeatherDataEntity::fromDB(*stmt));
+    }
 
     return conditions;
 }
+
+WeatherDataEntity DatabaseManager::getCurrentConditions() {
+    return getRecentConditions(1).front();
+}
+
+

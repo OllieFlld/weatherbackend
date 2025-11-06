@@ -4,14 +4,17 @@
 
 #ifndef BACKEND_WEATHERDATA_H
 #define BACKEND_WEATHERDATA_H
+#include <sqlite3.h>
 #include <string>
+#include <unordered_map>
+#include <crow/json.h>
 
 
-struct  WeatherDataEntity {
+class  WeatherDataEntity {
 public:
     std::string timestamp;
     std::string report_interval;
-    std::string air_temp;
+    const unsigned char *air_temp;
     std::string wind_lull;
     std::string wind_avg;
     std::string wind_gust;
@@ -30,7 +33,9 @@ public:
     std::string strike_count;
     std::string strike_distance;
 
-    static WeatherDataEntity fromDB(char **data, char **columns);
+    static WeatherDataEntity fromDB(sqlite3_stmt &stmt);
+
+    crow::json::wvalue toJSON();
 };
 
 
