@@ -95,8 +95,7 @@ std::list<WeatherDataEntity> DatabaseManager::getRecentConditions(int count = 0)
 
     std::list<WeatherDataEntity> conditions;
 
-    int done;
-    while ((done = sqlite3_step(stmt) == SQLITE_ROW)) {
+    while ((sqlite3_step(stmt) == SQLITE_ROW)) {
         conditions.push_back(WeatherDataEntity::fromDB(*stmt));
     }
 
