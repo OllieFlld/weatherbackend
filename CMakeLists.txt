@@ -17,8 +17,6 @@ add_executable(backend src/main.cpp
         src/image/Scene.h
         src/image/Elements/SceneElement.cpp
         src/image/Elements/SceneElement.h
-        src/image/Elements/TextElement.cpp
-        src/image/Elements/TextElement.h
 )
 
 find_package(Crow)

@@ -4,17 +4,21 @@
 
 #ifndef BACKEND_SCENEELEMENT_H
 #define BACKEND_SCENEELEMENT_H
+#include <string>
+#include <crow/json.h>
 
 
 class SceneElement {
 public:
-    SceneElement(int x, int y, int width, int height);
+    SceneElement(int x, int y, int width, int height, std::string name);
 
-private:
     int x;
     int y;
     int width;
     int height;
+    std::string value;
+
+    static SceneElement fromJson(crow::json::rvalue);
 };
 
 
