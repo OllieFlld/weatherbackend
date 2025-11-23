@@ -7,37 +7,30 @@
 #include <list>
 
 #include "DatabaseHelper.h"
+#include <SQLiteCpp/SQLiteCpp.h>
 
 DatabaseManager::DatabaseManager(std::string dbPath) {
-    sqlite3_open(dbPath.c_str(), &this->db);
-    if (!tablesExist()) {
+    database = new SQLite::Database(dbPath);
+    if (!tableExists()) {
         createWeatherTable();
     }
 }
 
-DatabaseManager::~DatabaseManager() {
-    sqlite3_close(this->db);
-}
 
-bool DatabaseManager::tablesExist() {
-    const char *query = "SELECT name FROM sqlite_master WHERE type = 'table' and name = 'weather';";
-    bool tableExists = false;
-    sqlite3_exec(
-        db,
-        query,
-        [](void *tableExists, int count, char **data, char **columns) {
-            *reinterpret_cast<bool *>(tableExists) = true;
+bool DatabaseManager::tableExists() {
+    try {
+        SQLite::Statement query (*database, "SELECT name FROM sqlite_master WHERE type = 'table' and name = 'weather';");
 
-            return 1;
-        },
-        &tableExists,
-        nullptr);
+        return query.executeStep() && !query.getColumn(0).isNull();
+    } catch (const std::exception &e) {
+        std::cerr << e.what() << std::endl;
 
-    return tableExists;
+        return false;
+    }
 }
 
 void DatabaseManager::createWeatherTable() {
-    const char *sql = "CREATE TABLE weather ("
+    std::string sql = "CREATE TABLE weather ("
             "Timestamp INTEGER,"
             "ReportInterval TEXT,"
             "AirTemp TEXT,"
@@ -57,7 +50,7 @@ void DatabaseManager::createWeatherTable() {
             "StrikeDistance TEXT"
             ");";
 
-    sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
+    database->exec(sql);
 }
 
 
@@ -87,16 +80,12 @@ std::list<WeatherDataEntity> DatabaseManager::getRecentConditions(int count = 0)
         sql = sql + " LIMIT " + std::to_string(count);
     }
     sqlite3_stmt *stmt;
-
-    int prepared = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-    if (prepared != SQLITE_OK) {
-        throw std::runtime_error(sqlite3_errmsg(db));
-    }
+    SQLite::Statement query (*database, sql);
 
     std::list<WeatherDataEntity> conditions;
 
-    while ((sqlite3_step(stmt) == SQLITE_ROW)) {
-        conditions.push_back(WeatherDataEntity::fromDB(*stmt));
+    while (query.executeStep()) {
+        conditions.push_back(WeatherDataEntity::fromDB(query));
     }
 
     return conditions;

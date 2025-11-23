@@ -8,19 +8,24 @@
 
 #include "../entities/WeatherDataEntity.h"
 #include <sqlite3.h>
+#include <SQLiteCpp/SQLiteCpp.h>
 
 class DatabaseManager {
 public:
     explicit DatabaseManager(std::string dbPath);
-    ~DatabaseManager();
 
     WeatherDataEntity getCurrentConditions();
 
     std::list<WeatherDataEntity>  getRecentConditions(int count);
+
+    std::string getCurrentStringValue(std::string column);
+
+
 private:
     sqlite3 *db;
+    SQLite::Database *database;
 
-    bool tablesExist();
+    bool tableExists();
     void createWeatherTable();
 
 };

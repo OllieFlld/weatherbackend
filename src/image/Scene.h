@@ -6,28 +6,33 @@
 #define BACKEND_SCENE_H
 #include <cimg.h>
 #include <list>
+#include <map>
 #include <crow/json.h>
 
-#include "Elements/SceneElement.h"
+#include "Elements/Base.h"
+#include "Elements/FunctionCall.h"
 
 
-class SceneElement;
+namespace Scenes {
+    class Scene {
+    public:
+        Scene(int width, int height);
+        static Scene fromFile(std::string filename,  std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions);
+        cimg_library::CImg<unsigned char> draw();
+        ///void writeToFile(std::string filename);
+        void setElements(std::list<Elements::Base> elements);
+        void addElement(Elements::Base element);
+        void addFunctionCall(Elements::FunctionCall element);
 
-class Scene {
-public:
-    Scene(int width, int height);
-    static Scene fromFile(std::string filename);
-    cimg_library::CImg<unsigned char> draw();
-    ///void writeToFile(std::string filename);
-    void setElements(std::list<SceneElement> elements);
-    void addElement(SceneElement element);
-
-private:
-    std::list<SceneElement> elements;
-    int width, height;
-    static int scaleDimension(int dimension, int limit);
-    static void validateFields(const crow::json::rvalue &json, const std::list<std::string>& validFields);
-};
+    private:
+        std::list<Elements::Base> elements;
+        std::list<Elements::FunctionCall> functionCallElements;
+        int width, height;
+        int backgroundColour;
+        static int scaleDimension(int dimension, int limit);
+        static void validateFields(const crow::json::rvalue &json, const std::list<std::string>& validFields);
+    };
+}
 
 
 #endif //BACKEND_SCENE_H

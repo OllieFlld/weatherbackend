@@ -3,20 +3,23 @@
 #include "Cimg.h"
 #include "image/Scene.h"
 #include "image/Writer.h"
+#include "modules/DateTime.h"
+#include "modules/Weather.h"
 
 int main() {
     crow::SimpleApp app;
 
     DatabaseManager manager = DatabaseManager("weather.sqlite3");
 
-    Scene scene = Scene::fromFile("test.json");
 
+    std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions;
 
+    allFunctions["DateTime"] = Modules::DateTime().functions;
+    allFunctions["Weather"] = Modules::Weather(manager).functions;
 
     CROW_ROUTE(app, "/refresh")
-            .methods(crow::HTTPMethod::Get)([&manager](const crow::request &req, crow::response &res) {
-                WeatherDataEntity conditions = manager.getCurrentConditions();
-                Scene scene = Scene::fromFile("test.json");
+            .methods(crow::HTTPMethod::Get)([allFunctions](const crow::request &req, crow::response &res) {
+                Scenes::Scene scene = Scenes::Scene::fromFile("test.json", allFunctions);
 
                 std::string path = Writer::write("text.png", scene.draw());
                 res.set_static_file_info_unsafe(path);

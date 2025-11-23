@@ -10,17 +10,20 @@
 #include <crow/json.h>
 
 
-class  WeatherDataEntity {
+namespace SQLite {
+    class Statement;
+}
+
+class WeatherDataEntity {
 public:
-    std::string timestamp;
+    int timestamp;
     std::string report_interval;
-    const unsigned char *air_temp;
+    std::string air_temp;
     std::string wind_lull;
     std::string wind_avg;
     std::string wind_gust;
     std::string wind_dir;
     std::string station_pressure;
-    std::string sea_level_pressure;
     std::string rh;
     std::string uv;
     std::string illuminance;
@@ -28,12 +31,10 @@ public:
     std::string precip_accumulation;
     std::string local_day_precip_accumulation;
     std::string precip_type;
-    std::string nc_precip_accumulation;
-    std::string nc_local_day_precip_accumulation;
     std::string strike_count;
     std::string strike_distance;
 
-    static WeatherDataEntity fromDB(sqlite3_stmt &stmt);
+    static WeatherDataEntity fromDB(SQLite::Statement &statement);
 
     crow::json::wvalue toJSON();
 };
