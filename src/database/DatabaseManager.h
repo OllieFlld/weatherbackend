@@ -20,9 +20,9 @@ public:
 
     std::string getCurrentStringValue(std::string column);
 
+    void insertConditions(WeatherDataEntity conditions);
 
 private:
-    sqlite3 *db;
     SQLite::Database *database;
 
     bool tableExists();

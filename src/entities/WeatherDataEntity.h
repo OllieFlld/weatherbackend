@@ -17,24 +17,24 @@ namespace SQLite {
 class WeatherDataEntity {
 public:
     int timestamp;
-    std::string report_interval;
-    std::string air_temp;
-    std::string wind_lull;
-    std::string wind_avg;
-    std::string wind_gust;
-    std::string wind_dir;
-    std::string station_pressure;
-    std::string rh;
-    std::string uv;
-    std::string illuminance;
-    std::string solar_radiation;
-    std::string precip_accumulation;
-    std::string local_day_precip_accumulation;
-    std::string precip_type;
-    std::string strike_count;
-    std::string strike_distance;
+    double air_temp;
+    double feels_like;
+    double wind_avg;
+    double wind_gust;
+    int wind_dir;
+    double wind_lull;
+    double station_pressure;
+    double uv;
+    int brightness;
+    double precip;
+    double precip_accumulation;
+    double local_day_precip_accumulation;
+
+    WeatherDataEntity();
 
     static WeatherDataEntity fromDB(SQLite::Statement &statement);
+
+    static WeatherDataEntity fromJSON(const crow::json::rvalue &json);
 
     crow::json::wvalue toJSON();
 };

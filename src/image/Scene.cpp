@@ -18,10 +18,10 @@ Scene::Scene(int width, int height) {
 
 cimg_library::CImg<unsigned char> Scene::draw() {
     cimg_library::CImg<unsigned char> image(this->width, this->height);
-
     image.fill(0xFFFFFF);
 
     for (Elements::Base element: elements) {
+        std::cout << element.value.c_str() << std::endl;
         image.draw_text(
             element.x,
             element.y,
@@ -35,6 +35,9 @@ cimg_library::CImg<unsigned char> Scene::draw() {
     }
 
     for (Elements::FunctionCall element: functionCallElements) {
+        std::cout << element.callFunction().c_str() << std::endl;
+        std::cout << element.callFunction() << std::endl;
+
         image.draw_text(
             element.x,
             element.y,

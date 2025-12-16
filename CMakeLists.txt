@@ -25,6 +25,8 @@ add_executable(backend src/main.cpp
         src/image/Elements/FunctionCall.h
         src/modules/Weather.cpp
         src/modules/Weather.h
+        src/datasources/Tempest.cpp
+        src/datasources/Tempest.h
 )
 
 find_package(Crow)
@@ -40,3 +42,6 @@ find_package(PNG REQUIRED)
 target_link_libraries (backend PUBLIC ${PNG_LIBRARY})
 target_compile_definitions(backend PRIVATE cimg_use_png=1)
 target_compile_definitions(backend PRIVATE cimg_display=0)
+
+find_package(cpr REQUIRED)
+target_link_libraries(backend PRIVATE cpr::cpr)

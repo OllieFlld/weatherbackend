@@ -7,7 +7,7 @@
 #include <map>
 using namespace Scenes::Elements;
 
-FunctionCall FunctionCall::fromJson(crow::json::rvalue json, std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions) {
+FunctionCall FunctionCall::fromJson(const crow::json::rvalue &json, std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions) {
     FunctionCall functionCall(json["x"].i(), json["y"].i(), json["width"].i(), json["height"].i(), json["fontsize"].i());
 
     std::string module = json["module"].s();

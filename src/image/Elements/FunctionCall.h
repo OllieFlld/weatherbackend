@@ -12,7 +12,7 @@ namespace Scenes::Elements {
     class FunctionCall : public Base {
     public:
         FunctionCall(int x, int y, int width, int height, int fontSize);
-        static FunctionCall fromJson(crow::json::rvalue, std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions);
+        static FunctionCall fromJson(const crow::json::rvalue &, std::map<std::string, std::map<std::string, std::function<std::string()>>> allFunctions);
         std::string callFunction();
     private:
         std::function<std::string()> function;

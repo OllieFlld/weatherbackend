@@ -11,7 +11,7 @@ using namespace Modules;
 std::string DateTime::getCurrentDate() {
     auto time = std::chrono::system_clock::now();
 
-    return std::format("({:%Y-%m-%d})", time);
+    return std::format("{:%a %d/%m/%Y}", time);
 }
 
 DateTime::DateTime() {

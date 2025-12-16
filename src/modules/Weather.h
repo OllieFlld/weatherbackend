@@ -12,9 +12,15 @@ namespace Modules {
     public:
         Weather(DatabaseManager &database);
         std::string getCurrentTemp();
+        std::string getCurrentFeelsLikeTemp();
+        std::string getTodaysPrecip();
 
         DatabaseManager *database;
+
+    private:
+        std::string formatTemp(double temp);
     };
+
 }
 
 #endif //BACKEND_DATABASEMODULE_H

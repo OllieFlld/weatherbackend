@@ -9,7 +9,7 @@
 using namespace cimg_library;
 
 std::string Writer::write(std::string path, CImg<> image) {
-    CImg<> result = image.save(path.c_str());
+    CImg<> result = image.save_png(path.c_str());
 
     return path;
 }
